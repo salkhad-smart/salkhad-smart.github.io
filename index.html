@@ -2894,11 +2894,26 @@
             target.status = 'approved';
             target.createdAt = 'تمت الموافقة الآن';
 
+            // إرسال رسالة تلقائية من فريق الدعم إلى صندوق رسائل حساب الناشر فور الموافقة على منشوره
+            const supportMsg = {
+                id: 'msg-approve-' + Date.now(),
+                fromUserId: 'support-team',
+                fromName: 'فريق دعم صلخد الذكي',
+                fromContact: 'إدارة المنصة',
+                toUserId: target.authorId || '',
+                toName: target.author || 'مواطن من صلخد',
+                subject: `إخطار بالموافقة على منشورك: ${target.title}`,
+                body: `مرحباً ${target.author || ''}، يسعدنا إبلاغك بأنه تمت الموافقة على منشورك (${target.title}) في قسم (${target.tag}) وأصبح الآن منشوراً لجميع أهالي صلخد. نتمنى لك كل التوفيق والنجاح!`,
+                time: 'الآن'
+            };
+            appMessages.unshift(supportMsg);
+            try { localStorage.setItem('salkhad_messages_v3', JSON.stringify(appMessages)); } catch (e) {}
+
             safeStorageSet('salkhad_items_v3', appItems);
             updateAllCountersAndViews();
             triggerDevicePushNotification(
-                `إضافة جديدة: ${target.tag}`,
-                `تم نشر "${target.title}" (${target.location}) في تطبيق صلخد الذكي.`
+                `تمت الموافقة على المنشور: ${target.title}`,
+                `تم نشر "${target.title}" في قسم ${target.tag} وإرسال رسالة تهنئة من فريق الدعم لصاحب الإعلان.`
             );
         }
 

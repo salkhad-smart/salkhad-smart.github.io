@@ -1,0 +1,21 @@
+{
+  "name": "صلخد الذكي - المنصة المجتمعية التفاعلية",
+  "short_name": "صلخد الذكي",
+  "description": "بوابة الخدمات التفاعلية، الطوارئ، المواصلات، والدليل الشامل لمدينة صلخد",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fdfbf7",
+  "theme_color": "#1e272c",
+  "icons": [
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiI+CiAgPHJlY3Qgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHJ4PSIxMTAiIGZpbGw9IiMxZTI3MmMiLz4KICA8Y2lyY2xlIGN4PSIyNTYiIGN5PSIyNTYiIHI9IjIxMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZDJiNDhjIiBzdHJva2Utd2lkdGg9IjE0Ii8+CiAgPHBhdGggZD0iTTEzNiAzNTBoMjQwdjM2SDEzNnptMjQtMTUwaDQwdjEzMGgtNDB6bTc2LTQ0aDQwdjE3NGgtNDB6bTc2IDQ0aDQwdjEzMGgtNDB6TTE1MCAxNjZoNTJ2MjRoLTUyem03Ni00NGg2MHYyNGgtNjB6bTc2IDQ0aDUydjI0aC01MnoiIGZpbGw9IiNkMmI0OGMiLz4KPC9zdmc+",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

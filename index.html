@@ -3,6 +3,13 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta name="theme-color" content="#1e272c"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+    <meta name="apple-mobile-web-app-title" content="صلخد الذكي"/>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiI+CiAgPHJlY3Qgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHJ4PSIxMTAiIGZpbGw9IiMxZTI3MmMiLz4KICA8Y2lyY2xlIGN4PSIyNTYiIGN5PSIyNTYiIHI9IjIxMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZDJiNDhjIiBzdHJva2Utd2lkdGg9IjE0Ii8+CiAgPHBhdGggZD0iTTEzNiAzNTBoMjQwdjM2SDEzNnptMjQtMTUwaDQwdjEzMGgtNDB6bTc2LTQ0aDQwdjE3NGgtNDB6bTc2IDQ0aDQwdjEzMGgtNDB6TTE1MCAxNjZoNTJ2MjRoLTUyem03Ni00NGg2MHYyNGgtNjB6bTc2IDQ0aDUydjI0aC01MnoiIGZpbGw9IiNkMmI0OGMiLz4KPC9zdmc+"/>
+    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiI+CiAgPHJlY3Qgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHJ4PSIxMTAiIGZpbGw9IiMxZTI3MmMiLz4KICA8Y2lyY2xlIGN4PSIyNTYiIGN5PSIyNTYiIHI9IjIxMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZDJiNDhjIiBzdHJva2Utd2lkdGg9IjE0Ii8+CiAgPHBhdGggZD0iTTEzNiAzNTBoMjQwdjM2SDEzNnptMjQtMTUwaDQwdjEzMGgtNDB6bTc2LTQ0aDQwdjE3NGgtNDB6bTc2IDQ0aDQwdjEzMGgtNDB6TTE1MCAxNjZoNTJ2MjRoLTUyem03Ni00NGg2MHYyNGgtNjB6bTc2IDQ0aDUydjI0aC01MnoiIGZpbGw9IiNkMmI0OGMiLz4KPC9zdmc+"/>
+    <link id="pwa-manifest-link" rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjogIlx1MDYzNVx1MDY0NFx1MDYyZVx1MDYyZiBcdTA2MjdcdTA2NDRcdTA2MzBcdTA2NDNcdTA2NGEgLSBcdTA2MjdcdTA2NDRcdTA2NDVcdTA2NDZcdTA2MzVcdTA2MjkgXHUwNjI3XHUwNjQ0XHUwNjQ1XHUwNjJjXHUwNjJhXHUwNjQ1XHUwNjM5XHUwNjRhXHUwNjI5IFx1MDYyN1x1MDY0NFx1MDYyYVx1MDY0MVx1MDYyN1x1MDYzOVx1MDY0NFx1MDY0YVx1MDYyOSIsICJzaG9ydF9uYW1lIjogIlx1MDYzNVx1MDY0NFx1MDYyZVx1MDYyZiBcdTA2MjdcdTA2NDRcdTA2MzBcdTA2NDNcdTA2NGEiLCAiZGVzY3JpcHRpb24iOiAiXHUwNjI4XHUwNjQ4XHUwNjI3XHUwNjI4XHUwNjI5IFx1MDYyN1x1MDY0NFx1MDYyZVx1MDYyZlx1MDY0NVx1MDYyN1x1MDYyYSBcdTA2MjdcdTA2NDRcdTA2MmFcdTA2NDFcdTA2MjdcdTA2MzlcdTA2NDRcdTA2NGFcdTA2MjlcdTA2MGMgXHUwNjI3XHUwNjQ0XHUwNjM3XHUwNjQ4XHUwNjI3XHUwNjMxXHUwNjI2XHUwNjBjIFx1MDYyN1x1MDY0NFx1MDY0NVx1MDY0OFx1MDYyN1x1MDYzNVx1MDY0NFx1MDYyN1x1MDYyYVx1MDYwYyBcdTA2NDhcdTA2MjdcdTA2NDRcdTA2MmZcdTA2NDRcdTA2NGFcdTA2NDQgXHUwNjI3XHUwNjQ0XHUwNjM0XHUwNjI3XHUwNjQ1XHUwNjQ0IFx1MDY0NFx1MDY0NVx1MDYyZlx1MDY0YVx1MDY0Nlx1MDYyOSBcdTA2MzVcdTA2NDRcdTA2MmVcdTA2MmYiLCAibGFuZyI6ICJhciIsICJkaXIiOiAicnRsIiwgInN0YXJ0X3VybCI6ICIuL2luZGV4Lmh0bWwiLCAic2NvcGUiOiAiLi8iLCAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwgIm9yaWVudGF0aW9uIjogInBvcnRyYWl0IiwgImJhY2tncm91bmRfY29sb3IiOiAiI2ZkZmJmNyIsICJ0aGVtZV9jb2xvciI6ICIjMWUyNzJjIiwgImljb25zIjogW3sic3JjIjogImRhdGE6aW1hZ2Uvc3ZnK3htbDtiYXNlNjQsUEhOMlp5QjRiV3h1Y3owaWFIUjBjRG92TDNkM2R5NTNNeTV2Y21jdk1qQXdNQzl6ZG1jaUlIWnBaWGRDYjNnOUlqQWdNQ0ExTVRJZ05URXlJaUIzYVdSMGFEMGlOVEV5SWlCb1pXbG5hSFE5SWpVeE1pSStDaUFnUEhKbFkzUWdkMmxrZEdnOUlqVXhNaUlnYUdWcFoyaDBQU0kxTVRJaUlISjRQU0l4TVRBaUlHWnBiR3c5SWlNeFpUSTNNbU1pTHo0S0lDQThZMmx5WTJ4bElHTjRQU0l5TlRZaUlHTjVQU0l5TlRZaUlISTlJakl4TUNJZ1ptbHNiRDBpYm05dVpTSWdjM1J5YjJ0bFBTSWpaREppTkRoaklpQnpkSEp2YTJVdGQybGtkR2c5SWpFMElpOCtDaUFnUEhCaGRHZ2daRDBpVFRFek5pQXpOVEJvTWpRd2RqTTJTREV6Tm5wdE1qUXRNVFV3YURRd2RqRXpNR2d0TkRCNmJUYzJMVFEwYURRd2RqRTNOR2d0TkRCNmJUYzJJRFEwYURRd2RqRXpNR2d0TkRCNlRURTFNQ0F4Tmpab05USjJNalJvTFRVeWVtMDNOaTAwTkdnMk1IWXlOR2d0TmpCNmJUYzJJRFEwYURVeWRqSTBhQzAxTW5vaUlHWnBiR3c5SWlOa01tSTBPR01pTHo0S1BDOXpkbWMrIiwgInNpemVzIjogIjE5MngxOTIgNTEyeDUxMiIsICJ0eXBlIjogImltYWdlL3N2Zyt4bWwiLCAicHVycG9zZSI6ICJhbnkgbWFza2FibGUifV19"/>
     <title>صلخد الذكي - المنصة المجتمعية التفاعلية</title>
     
     <!-- مكتبة Tailwind CSS والخطوط الرسمية -->
@@ -802,6 +809,7 @@
             </div>
 
             <form id="user-submit-form" onsubmit="handleUserSubmission(event)" class="space-y-3.5">
+                <input id="sub-edit-item-id" type="hidden" value=""/>
                 <!-- قسم التعريف البسيط بالناشر (إلزامي قبل نشر أي خدمة لمنع الحسابات الوهمية، ويراه الأدمن فقط بدون رقم وطني) -->
                 <div class="bg-amber-50/90 border border-gold rounded-2xl p-3.5 space-y-2.5">
                     <div class="flex items-center justify-between">
@@ -2161,9 +2169,14 @@
                         </div>
                         <span class="text-[11px] text-slate-500 block mt-0.5">${item.tag} • ${item.location}</span>
                     </div>
-                    <span class="shrink-0 text-[10px] font-bold px-2.5 py-1 rounded-full ${item.status === 'approved' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
-                        ${item.status === 'approved' ? '✓ منشور للعامة' : '⏳ بانتظار موافقة الأدمن'}
-                    </span>
+                    <div class="flex items-center gap-1.5 shrink-0">
+                        <button onclick="openEditItemModal('${item.id}')" class="p-1.5 rounded-xl bg-amber-100 text-amber-900 hover:bg-amber-200" title="تعديل بيانات الإعلان">
+                            <span class="material-symbols-outlined text-[15px]">edit</span>
+                        </button>
+                        <span class="text-[10px] font-bold px-2.5 py-1 rounded-full ${item.status === 'approved' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+                            ${item.status === 'approved' ? '✓ منشور' : '⏳ قيد المراجعة'}
+                        </span>
+                    </div>
                 </div>
             `).join('');
         }
@@ -2405,6 +2418,7 @@
         // ==================== 7. إرسال خدمة جديدة من المستخدم (تدخل بحالة Pending) ====================
         function openSubmitModal(defaultCat = 'directory') {
             const modal = document.getElementById('submit-modal');
+            document.getElementById('sub-edit-item-id').value = '';
             document.getElementById('sub-category').value = defaultCat;
             const nameInput = document.getElementById('sub-author-realname');
             const idInput = document.getElementById('sub-identity-proof');
@@ -2414,6 +2428,23 @@
             if (idInput && currentUser && currentUser.identityProof) {
                 idInput.value = currentUser.identityProof;
             }
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function openEditItemModal(itemId) {
+            const target = appItems.find(i => i.id === itemId);
+            if (!target) return;
+            const modal = document.getElementById('submit-modal');
+            document.getElementById('sub-edit-item-id').value = target.id;
+            document.getElementById('sub-author-realname').value = target.author || (currentUser ? currentUser.name : '');
+            document.getElementById('sub-identity-proof').value = target.identityProof || (currentUser ? currentUser.identityProof : 'تعديل موثق');
+            document.getElementById('sub-category').value = target.category || 'directory';
+            document.getElementById('sub-tag').value = target.tag || 'طبيب / عيادة';
+            document.getElementById('sub-title').value = target.title || '';
+            document.getElementById('sub-location').value = target.location || '';
+            document.getElementById('sub-phone').value = (target.phone && target.phone !== 'غير محدد') ? target.phone : '';
+            document.getElementById('sub-desc').value = target.desc || '';
             modal.classList.remove('hidden');
             modal.classList.add('flex');
         }
@@ -2432,6 +2463,7 @@
 
         function handleUserSubmission(event) {
             event.preventDefault();
+            const editId = document.getElementById('sub-edit-item-id').value.trim();
             const realName = document.getElementById('sub-author-realname').value.trim();
             const identityProof = document.getElementById('sub-identity-proof').value.trim();
             const category = document.getElementById('sub-category').value;
@@ -2441,13 +2473,12 @@
             const phone = document.getElementById('sub-phone').value.trim();
             const desc = document.getElementById('sub-desc').value.trim();
 
-            if (!realName || realName.length < 4 || !identityProof || identityProof.length < 4) {
-                showToast('يرجى إدخال اسمك الحقيقي وما يثبت هويتك قبل نشر أي خدمة', 'error');
+            if (!realName || realName.length < 3 || !identityProof || identityProof.length < 3) {
+                showToast('يرجى إدخال الاسم والحي السكني أو الصفة قبل الحفظ', 'error');
                 return;
             }
             if (!title || !desc) return;
 
-            // حفظ هوية المستخدم في حسابه تلقائياً للمرات القادمة
             currentUser = {
                 id: currentUser && currentUser.id ? currentUser.id : ('user-' + Date.now()),
                 name: realName,
@@ -2457,6 +2488,29 @@
             };
             try { localStorage.setItem('salkhad_user_profile_v3', JSON.stringify(currentUser)); } catch (e) {}
 
+            if (editId) {
+                const existing = appItems.find(i => i.id === editId);
+                if (existing) {
+                    existing.category = category;
+                    existing.tag = tag;
+                    existing.title = title;
+                    existing.location = location;
+                    existing.phone = phone || existing.phone || 'غير محدد';
+                    existing.desc = desc;
+                    existing.author = realName;
+                    existing.identityProof = identityProof;
+                    existing.status = isAdminLoggedIn ? 'approved' : 'pending';
+                    existing.createdAt = isAdminLoggedIn ? 'تم التعديل الآن' : 'معدّل (بانتظار الموافقة)';
+                }
+                safeStorageSet('salkhad_items_v3', appItems);
+                updateAllCountersAndViews();
+                document.getElementById('user-submit-form').reset();
+                document.getElementById('sub-edit-item-id').value = '';
+                closeSubmitModal();
+                showToast(isAdminLoggedIn ? 'تم حفظ التعديلات ونشرها فوراً!' : 'تم حفظ تعديلك وإرساله لموافقة المشرف.');
+                return;
+            }
+
             const newItem = {
                 id: 'item-' + Date.now(),
                 category,
@@ -2465,7 +2519,7 @@
                 location,
                 phone: phone || (currentUser && currentUser.contact ? currentUser.contact : 'غير محدد'),
                 desc,
-                status: 'pending',
+                status: isAdminLoggedIn ? 'approved' : 'pending',
                 author: realName,
                 authorId: currentUser.id,
                 identityProof,
@@ -2478,7 +2532,7 @@
 
             document.getElementById('user-submit-form').reset();
             closeSubmitModal();
-            showToast('تم إرسال طلبك بنجاح! ينتظر الآن موافقة الأدمن ليظهر للجميع.');
+            showToast(isAdminLoggedIn ? 'تم نشر الخدمة مباشرة!' : 'تم إرسال طلبك بنجاح! ينتظر الآن موافقة الأدمن ليظهر للجميع.');
         }
 
         // ==================== 8. البوابات السرية ونظام الأدمن ====================
@@ -2822,9 +2876,14 @@
                         <h5 class="font-bold text-xs text-deep-charcoal">${item.title}</h5>
                         <span class="text-[10px] text-slate-400">${item.location} • ${item.phone}</span>
                     </div>
-                    <button onclick="adminDeleteItem('${item.id}')" class="text-error hover:bg-red-50 p-2 rounded-xl" title="حذف من المنصة">
-                        <span class="material-symbols-outlined text-[18px]">delete</span>
-                    </button>
+                    <div class="flex items-center gap-1">
+                        <button onclick="openEditItemModal('${item.id}')" class="text-amber-900 bg-amber-100 hover:bg-amber-200 p-2 rounded-xl" title="تعديل الإعلان">
+                            <span class="material-symbols-outlined text-[17px]">edit</span>
+                        </button>
+                        <button onclick="adminDeleteItem('${item.id}')" class="text-error bg-red-50 hover:bg-red-100 p-2 rounded-xl" title="حذف من المنصة">
+                            <span class="material-symbols-outlined text-[17px]">delete</span>
+                        </button>
+                    </div>
                 </div>
             `).join('');
         }
@@ -2895,6 +2954,13 @@
             }
             renderVisitorBadge();
         })();
+
+        // تسجيل الـ Service Worker لتفعيل التثبيت المباشر كبرنامج مستقل على سطح المكتب والموبايل (PWA)
+        if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').catch(() => {});
+            });
+        }
 
         initAppData();
     </script>

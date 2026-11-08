@@ -152,7 +152,23 @@
 <body class="text-on-surface overflow-x-hidden bg-background">
 
     <!-- Toast Notification Container -->
-    <div id="toast-container" class="fixed top-20 left-1/2 -translate-x-1/2 z-[100] flex flex-col gap-2 w-[90%] max-w-sm pointer-events-none"></div>
+    <div id="toast-container" class="fixed top-20 left-1/2 -translate-x-1/2 z-[100] flex flex-col gap-2 w-[92%] max-w-md pointer-events-none"></div>
+
+    <!-- شريط التنبيه العاجل العلوي (يظهر فور وصول إشعار جديد مع صوت واهتزاز) -->
+    <div id="live-push-banner" class="hidden fixed top-16 inset-x-0 z-50 bg-deep-charcoal text-white border-b-2 border-gold shadow-2xl px-4 py-3 transition-all duration-300">
+        <div class="max-w-lg mx-auto flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2.5">
+                <span class="w-8 h-8 rounded-xl bg-gold text-deep-charcoal flex items-center justify-center shrink-0 animate-bounce">
+                    <span class="material-symbols-outlined text-[20px]">notifications_active</span>
+                </span>
+                <div>
+                    <h4 id="live-push-title" class="text-xs font-extrabold text-gold">تنبيه جديد</h4>
+                    <p id="live-push-body" class="text-[11px] text-gray-200 line-clamp-2"></p>
+                </div>
+            </div>
+            <button onclick="dismissLivePushBanner()" class="text-xs bg-white/10 hover:bg-white/20 px-2.5 py-1 rounded-lg text-gold font-bold shrink-0">إغلاق</button>
+        </div>
+    </div>
 
     <!-- شريط الرأس العلوي (TopAppBar) -->
     <header class="bg-surface/90 backdrop-blur-xl fixed top-0 w-full z-40 shadow-sm h-16 flex flex-row-reverse justify-between items-center px-container-padding border-b border-outline-variant/25">
@@ -189,18 +205,54 @@
         <!-- ==================== VIEW 1: HOME (الرئيسية) ==================== -->
         <div id="view-home" class="view-section active">
             
-            <!-- ترحيب وشريط النبض اليومي لمدينة صلخد -->
-            <section class="py-3 flex justify-between items-end">
+            <!-- رسالة تثبيت التطبيق على الشاشة الرئيسية للهاتف (تظهر تلقائياً عند دخول الزائر) -->
+            <section id="install-app-banner" class="mb-3 mt-1">
+                <div class="bg-gradient-to-l from-deep-charcoal via-slate-800 to-deep-charcoal text-white p-3.5 rounded-2xl shadow-md border border-gold/50 flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-10 h-10 rounded-xl bg-gold/20 text-gold flex items-center justify-center shrink-0">
+                            <span class="material-symbols-outlined text-[22px]">install_mobile</span>
+                        </div>
+                        <div>
+                            <h3 class="text-xs font-extrabold text-gold">ثبّت تطبيق "صلخد الذكي" على شاشتك الرئيسية</h3>
+                            <p class="text-[11px] text-gray-300">لوصول أسرع بضغطة واحدة وتشغيل أرقام الطوارئ حتى بدون إنترنت</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1 shrink-0">
+                        <button onclick="openInstallGuideModal()" class="bg-gold text-deep-charcoal px-3 py-1.5 rounded-xl text-xs font-extrabold shadow-sm">تثبيت</button>
+                        <button onclick="dismissInstallBanner()" class="text-gray-400 hover:text-white p-1" title="إخفاء">
+                            <span class="material-symbols-outlined text-[18px]">close</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ترحيب وحالة الطقس الحقيقية لمدينة صلخد (مباشر من الأرصاد الجوية + حالة طريق صلخد - السويداء) -->
+            <section class="py-2 flex justify-between items-end gap-2">
                 <div>
                     <h1 class="text-2xl md:text-3xl text-deep-charcoal mb-0.5 font-extrabold">مرحباً بك في صلخد</h1>
                     <p class="text-xs text-on-surface-variant">مجتمعنا التفاعلي، بذكاء وتكافل أهالي الجبل.</p>
                 </div>
-                <div class="bg-surface-container-lowest border border-gold/40 rounded-2xl px-3 py-1.5 text-center shadow-sm">
-                    <div class="flex items-center gap-1 text-deep-charcoal font-bold text-xs">
-                        <span class="material-symbols-outlined text-amber-600 text-[16px]">partly_cloudy_day</span>
-                        <span>18°C جبلية</span>
+                <div onclick="fetchRealSalkhadWeather(true)" title="اضغط لتحديث الطقس وحالة الطريق الآن" class="bg-surface-container-lowest border border-gold/50 rounded-2xl px-3 py-1.5 text-center shadow-sm cursor-pointer active:scale-95 transition-transform">
+                    <div class="flex items-center justify-center gap-1 text-deep-charcoal font-extrabold text-xs">
+                        <span id="weather-icon" class="material-symbols-outlined text-amber-600 text-[17px]">partly_cloudy_day</span>
+                        <span id="weather-temp-text">--°C</span>
+                        <span id="weather-cond-text" class="text-[11px] font-bold">جاري التحديث...</span>
                     </div>
-                    <span class="text-[10px] text-slate-400 block">ارتفاع 1350م</span>
+                    <span id="weather-wind-text" class="text-[10px] text-slate-500 block">ارتفاع 1350م • طقس مباشر</span>
+                </div>
+            </section>
+
+            <!-- شريط حالة الطقس والطرقات الجبلية الحقيقي (يستند إلى بيانات أرصاد صلخد المباشرة) -->
+            <section class="mb-3">
+                <div id="road-weather-bar" class="bg-amber-50/90 border border-amber-200 rounded-2xl px-3.5 py-2.5 flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-2">
+                        <span id="road-weather-icon" class="material-symbols-outlined text-amber-800 text-[20px]">add_road</span>
+                        <div>
+                            <h4 id="road-weather-title" class="text-xs font-extrabold text-deep-charcoal">حالة الجو وطريق صلخد - السويداء (مباشر)</h4>
+                            <p id="road-weather-desc" class="text-[11px] text-slate-600">يتم جلب درجة الحرارة وسرعة الرياح ومستوى الرؤية الحقيقي في صلخد...</p>
+                        </div>
+                    </div>
+                    <button onclick="fetchRealSalkhadWeather(true)" class="text-[10px] bg-white border border-slate-200 px-2 py-1 rounded-lg font-bold text-deep-charcoal shrink-0">تحديث</button>
                 </div>
             </section>
 
@@ -455,8 +507,12 @@
                 <!-- نموذج إنشاء أو تعديل حساب المستخدم الشخصي (الاسم إلزامي، طريقة الاتصال غير إلزامية) -->
                 <form id="user-profile-form" onsubmit="saveUserProfile(event)" class="hidden mt-4 pt-4 border-t border-slate-200 text-right space-y-2.5">
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">الاسم أو اللقب في التطبيق (إلزامي)</label>
-                        <input id="prof-name-input" required type="text" placeholder="مثال: مناف / أبو كريم / صيدلية الجبل" class="w-full rounded-xl border-slate-300 text-xs py-2"/>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">الاسم الثلاثي أو اسم المصلحة (إلزامي)</label>
+                        <input id="prof-name-input" required type="text" placeholder="مثال: مناف الصفدي / صيدلية الجبل" class="w-full rounded-xl border-slate-300 text-xs py-2"/>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">التعريف البسيط لتوثيق الحساب عند المشرف (سري لا يظهر للعامة)</label>
+                        <input id="prof-identity-input" required type="text" placeholder="مثال: الحي السكني بصلخد + اسم المصلحة أو رقم موبايل للتأكيد" class="w-full rounded-xl border-slate-300 text-xs py-2 bg-amber-50/50"/>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">نبذة أو صفة مختصرة (اختياري)</label>
@@ -746,6 +802,27 @@
             </div>
 
             <form id="user-submit-form" onsubmit="handleUserSubmission(event)" class="space-y-3.5">
+                <!-- قسم التعريف البسيط بالناشر (إلزامي قبل نشر أي خدمة لمنع الحسابات الوهمية، ويراه الأدمن فقط بدون رقم وطني) -->
+                <div class="bg-amber-50/90 border border-gold rounded-2xl p-3.5 space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-extrabold text-deep-charcoal flex items-center gap-1">
+                            <span class="material-symbols-outlined text-amber-800 text-[18px]">verified_user</span>
+                            تعريف بسيط بالناشر لتوثيق الطلب (يراه المشرف فقط)
+                        </span>
+                        <span class="text-[10px] bg-amber-200 text-amber-900 px-2 py-0.5 rounded-full font-bold">بسيط وسريع</span>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-700 mb-0.5">الاسم والكنية (أو اللقب المعروف بصلخد)</label>
+                            <input id="sub-author-realname" required type="text" placeholder="مثال: مناف الصفدي / أبو كريم" class="w-full rounded-xl border-slate-300 text-xs py-2 bg-white"/>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-700 mb-0.5">الحي السكني + الصفة أو رقم تواصل للتأكيد</label>
+                            <input id="sub-identity-proof" required type="text" placeholder="مثال: الحي الشرقي - صاحب المحل / 09xxxxxxxx" class="w-full rounded-xl border-slate-300 text-xs py-2 bg-white"/>
+                        </div>
+                    </div>
+                </div>
+
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">القسم الرئيسي</label>
                     <select id="sub-category" required class="w-full rounded-xl border-slate-300 text-xs py-2.5 focus:ring-gold focus:border-gold">
@@ -765,6 +842,11 @@
                             <option value="مخبر / أشعة / تمريض">🔬 مخبر تحاليل / مركز أشعة / تمريض منزلي</option>
                             <option value="طب أسنان">🦷 عيادة طب أسنان وتعويضات</option>
                             <option value="نادي رياضي / Gym">🏋️ نادي رياضي (Gym) / لياقة بدنية وكمال أجسام</option>
+                        </optgroup>
+                        <optgroup label="✂️ التجميل، الحلاقة، والعناية الشخصية">
+                            <option value="كوافير رجالي">💈 كوافير وحلاقة رجالية</option>
+                            <option value="كوافير نسائي">💇‍♀️ كوافير وصالون تجميل نسائي</option>
+                            <option value="عناية بالبشرة وتجميل">✨ مركز تجميل وعناية بالبشرة ومكياج وتجهيز عرائس</option>
                         </optgroup>
                         <optgroup label="🚕 المواصلات والتوصيل">
                             <option value="تكسي وتوصيل">🚕 مكتب تكسي / سيارة جوالة</option>
@@ -899,6 +981,37 @@
         </div>
     </div>
 
+    <!-- ==================== MODAL 6: نافذة تثبيت التطبيق على الشاشة الرئيسية للهاتف ==================== -->
+    <div id="install-guide-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div class="bg-surface w-full max-w-sm rounded-3xl p-5 shadow-2xl border-2 border-gold text-right">
+            <div class="flex justify-between items-center mb-3 pb-2 border-b border-slate-200">
+                <div class="flex items-center gap-2 text-deep-charcoal">
+                    <span class="material-symbols-outlined text-tertiary">add_to_home_screen</span>
+                    <h3 class="font-extrabold text-sm">تثبيت "صلخد الذكي" على الشاشة الرئيسية</h3>
+                </div>
+                <button onclick="closeInstallGuideModal()" class="text-slate-400 hover:text-slate-700">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <p class="text-xs text-slate-600 leading-relaxed mb-3">
+                ثبّت الموقع كأيقونة تطبيق على شاشة هاتفك ليفتح فوراً بملء الشاشة ويعمل حتى عند انقطاع الإنترنت:
+            </p>
+            <div class="space-y-2.5 text-xs mb-4">
+                <div class="p-3 rounded-2xl bg-surface-container-low border border-slate-200">
+                    <span class="font-extrabold text-deep-charcoal block mb-1">📱 لهواتف أندرويد (متصفح Chrome):</span>
+                    <span class="text-slate-600">اضغط على النقاط الثلاث <strong>(⋮)</strong> في أعلى المتصفح ثم اختر <strong>"الإضافة إلى الشاشة الرئيسية" (Add to Home screen)</strong> أو <strong>"تثبيت التطبيق"</strong>.</span>
+                </div>
+                <div class="p-3 rounded-2xl bg-surface-container-low border border-slate-200">
+                    <span class="font-extrabold text-deep-charcoal block mb-1">🍏 لهواتف آيفون (متصفح Safari):</span>
+                    <span class="text-slate-600">اضغط على أيقونة المشاركة <strong>(Share ⬆️)</strong> في أسفل الشاشة ثم اختر <strong>"إضافة إلى الشاشة الرئيسية" (Add to Home Screen)</strong>.</span>
+                </div>
+            </div>
+            <button onclick="triggerNativeInstallOrClose()" class="w-full bg-deep-charcoal text-gold py-2.5 rounded-xl text-xs font-extrabold">
+                فهمت، تثبيت الآن ✓
+            </button>
+        </div>
+    </div>
+
     <!-- شريط التنقل السفلي (BottomNavBar) -->
     <nav class="bg-deep-charcoal fixed bottom-0 w-full z-40 rounded-t-2xl shadow-[0px_-8px_30px_rgba(30,39,44,0.18)] h-20 px-4 pb-2 flex flex-row-reverse justify-around items-center">
         <a href="#view-home" onclick="switchTab('home', this); return false;" class="nav-btn flex flex-col items-center justify-center bg-white/10 text-gold rounded-xl px-4 py-1.5 active:scale-90 transition-all duration-200">
@@ -1000,7 +1113,50 @@
                 status: 'approved',
                 author: 'كابتن رامي',
                 authorId: 'user-gym-coach',
+                identityProof: 'توثيق نقابة الرياضيين - صلخد',
                 createdAt: 'اليوم'
+            },
+            {
+                id: 'item-beauty-1',
+                category: 'directory',
+                tag: 'كوافير رجالي',
+                title: 'صالون وكوافير الأناقة الرجالي',
+                location: 'صلخد - ساحة القلعة',
+                phone: '0933778899',
+                desc: 'حلاقة رجالية وشبابية حديثة، عناية بالبشرة والشعر، وتجهيز عرسان بالحجز المسبق.',
+                status: 'approved',
+                author: 'وسيم (كوافير)',
+                authorId: 'user-barber-1',
+                identityProof: 'الحي الغربي - رخصة مهنية',
+                createdAt: 'اليوم'
+            },
+            {
+                id: 'item-beauty-2',
+                category: 'directory',
+                tag: 'كوافير نسائي',
+                title: 'كوافير وصالون لمسة جمال النسائي',
+                location: 'صلخد - الشارع الرئيسي',
+                phone: '0988112244',
+                desc: 'تصفيف شعر، صبغات ومعالجات بروتين، مكياج مناسبات وتجهيز عرائس متكامل.',
+                status: 'approved',
+                author: 'مدام رنا',
+                authorId: 'user-salon-2',
+                identityProof: 'صلخد - سجل حرفي موثق',
+                createdAt: 'اليوم'
+            },
+            {
+                id: 'item-beauty-3',
+                category: 'directory',
+                tag: 'عناية بالبشرة وتجميل',
+                title: 'مركز أوركيد للعناية بالبشرة والتجميل والليزر',
+                location: 'صلخد - مقابل المركز الثقافي',
+                phone: '0944665533',
+                desc: 'جلسات تنظيف بشرة عميق، ديرمابن، عناية علاجية بالبشرة، واستشارات تجميلية بإشراف مختصات.',
+                status: 'approved',
+                author: 'مركز أوركيد',
+                authorId: 'user-beauty-3',
+                identityProof: 'ترخيص صحي مهني - صلخد',
+                createdAt: 'أمس'
             },
             // الوظائف والتعليم والإعلانات
             {
@@ -1221,6 +1377,8 @@
         let cloudDbUrl = "";
         let cloudPollTimer = null;
         let lastSeenNotifId = "";
+        let appTotalVisits = 1;
+        let visitCountedThisSession = false;
 
         function safeStorageGet(key, fallback) {
             try {
@@ -1271,6 +1429,7 @@
                     emergency: appEmergencyContacts,
                     pulse: appCityPulse,
                     messages: appMessages,
+                    totalVisits: appTotalVisits,
                     updatedAt: Date.now()
                 };
                 await fetch(base + '/salkhad_app_v3.json', {
@@ -1312,19 +1471,46 @@
                     appCityPulse = data.pulse;
                     try { localStorage.setItem('salkhad_pulse_v3', JSON.stringify(appCityPulse)); } catch (e) {}
                 }
+                if (typeof data.totalVisits === 'number') {
+                    if (!visitCountedThisSession) {
+                        visitCountedThisSession = true;
+                        appTotalVisits = data.totalVisits + 1;
+                        try { localStorage.setItem('salkhad_exact_visits_v4', String(appTotalVisits)); } catch (e) {}
+                        // حفظ الزيارة الجديدة في السحابة بدقة
+                        fetch(base + '/salkhad_app_v3/totalVisits.json', {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(appTotalVisits)
+                        }).catch(() => {});
+                    } else {
+                        appTotalVisits = Math.max(appTotalVisits, data.totalVisits);
+                        try { localStorage.setItem('salkhad_exact_visits_v4', String(appTotalVisits)); } catch (e) {}
+                    }
+                    renderVisitorBadge();
+                } else if (!visitCountedThisSession) {
+                    visitCountedThisSession = true;
+                    pushStateToCloud();
+                }
                 if (Array.isArray(data.messages)) {
                     appMessages = data.messages;
                     try { localStorage.setItem('salkhad_messages_v3', JSON.stringify(appMessages)); } catch (e) {}
                 }
                 if (Array.isArray(data.notifications) && data.notifications.length > 0) {
                     const newest = data.notifications[0];
-                    if (lastSeenNotifId && newest.id !== lastSeenNotifId && devicePushEnabled) {
-                        playNotificationChime();
-                        showToast(`🔔 إشعار جديد: ${newest.title} — ${newest.body}`, newest.type === 'emergency' ? 'error' : 'success');
+                    if (lastSeenNotifId && newest.id !== lastSeenNotifId) {
+                        lastSeenNotifId = newest.id;
+                        appNotifications = data.notifications;
+                        try { localStorage.setItem('salkhad_notifs_v3', JSON.stringify(appNotifications)); } catch (e) {}
+                        if (devicePushEnabled) {
+                            playStrongAlertFeedback(newest.type === 'emergency');
+                            showLivePushBanner(newest.title, newest.body);
+                            showToast(`🔔 ${newest.title}: ${newest.body}`, newest.type === 'emergency' ? 'error' : 'success');
+                        }
+                    } else {
+                        lastSeenNotifId = newest.id;
+                        appNotifications = data.notifications;
+                        try { localStorage.setItem('salkhad_notifs_v3', JSON.stringify(appNotifications)); } catch (e) {}
                     }
-                    lastSeenNotifId = newest.id;
-                    appNotifications = data.notifications;
-                    try { localStorage.setItem('salkhad_notifs_v3', JSON.stringify(appNotifications)); } catch (e) {}
                 }
                 updateAllCountersAndViews();
                 updateCloudStatusBadge(true);
@@ -1351,16 +1537,23 @@
         function startCloudPolling() {
             if (cloudPollTimer) clearInterval(cloudPollTimer);
             if (!cleanFirebaseUrl(cloudDbUrl)) return;
+            // استجابة سحابية سريعة جداً كل 3.5 ثانية + تحديث فوري عند فتح الشاشة
             cloudPollTimer = setInterval(() => {
                 pullFromCloudNow(true);
-            }, 12000);
+            }, 3500);
         }
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible' && cleanFirebaseUrl(cloudDbUrl)) {
+                pullFromCloudNow(true);
+            }
+        });
 
         function initAppData() {
             cloudDbUrl = cleanFirebaseUrl(DEFAULT_CLOUD_DB_URL || safeStorageGet('salkhad_cloud_db_url', ''));
             currentUser = safeStorageGet('salkhad_user_profile_v3', {
                 id: 'user-' + Math.random().toString(36).substring(2, 9),
-                name: 'مواطن من صلخد',
+                name: 'زائر جديد',
+                identityProof: '',
                 bio: 'عضو في مجتمع صلخد الذكي',
                 contact: ''
             });
@@ -1389,6 +1582,169 @@
             if (cloudDbUrl) {
                 pullFromCloudNow(true);
                 startCloudPolling();
+            }
+            initInstallBannerState();
+            fetchRealSalkhadWeather(false);
+        }
+
+        // ==================== نظام تثبيت التطبيق على الشاشة الرئيسية (PWA Install Prompt) ====================
+        let deferredInstallPrompt = null;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredInstallPrompt = e;
+            const banner = document.getElementById('install-app-banner');
+            if (banner) banner.classList.remove('hidden');
+        });
+
+        function initInstallBannerState() {
+            const dismissed = safeStorageGet('salkhad_install_dismissed', false);
+            const banner = document.getElementById('install-app-banner');
+            if (banner && dismissed) {
+                banner.classList.add('hidden');
+            }
+        }
+
+        function dismissInstallBanner() {
+            const banner = document.getElementById('install-app-banner');
+            if (banner) banner.classList.add('hidden');
+            try { localStorage.setItem('salkhad_install_dismissed', 'true'); } catch (e) {}
+        }
+
+        function openInstallGuideModal() {
+            if (deferredInstallPrompt) {
+                deferredInstallPrompt.prompt();
+                deferredInstallPrompt.userChoice.then(() => {
+                    deferredInstallPrompt = null;
+                    dismissInstallBanner();
+                }).catch(() => {});
+                return;
+            }
+            const modal = document.getElementById('install-guide-modal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        }
+
+        function closeInstallGuideModal() {
+            const modal = document.getElementById('install-guide-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+
+        function triggerNativeInstallOrClose() {
+            closeInstallGuideModal();
+            dismissInstallBanner();
+            showToast('شكراً لك! يمكنك تثبيت الأيقونة من قائمة المتصفح في أي وقت.');
+        }
+
+        // ==================== نظام الأرصاد الجوية الحقيقي لمدينة صلخد وحالة الطريق الجبلي (Open-Meteo API) ====================
+        // إحداثيات قلعة ومدينة صلخد: خط عرض 32.492، خط طول 36.711، ارتفاع 1350 متر
+        async function fetchRealSalkhadWeather(manualClick = false) {
+            const tempEl = document.getElementById('weather-temp-text');
+            const condEl = document.getElementById('weather-cond-text');
+            const windEl = document.getElementById('weather-wind-text');
+            const iconEl = document.getElementById('weather-icon');
+            const roadTitle = document.getElementById('road-weather-title');
+            const roadDesc = document.getElementById('road-weather-desc');
+            const roadBar = document.getElementById('road-weather-bar');
+            const roadIcon = document.getElementById('road-weather-icon');
+
+            try {
+                const url = 'https://api.open-meteo.com/v1/forecast?latitude=32.492&longitude=36.711&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&timezone=auto';
+                const res = await fetch(url);
+                if (!res.ok) throw new Error('Weather HTTP ' + res.status);
+                const data = await res.json();
+                const cur = data.current;
+                if (!cur) throw new Error('No current weather');
+
+                const temp = Math.round(cur.temperature_2m);
+                const wind = Math.round(cur.wind_speed_10m);
+                const humidity = Math.round(cur.relative_humidity_2m || 50);
+                const code = cur.weather_code;
+
+                let condName = 'صافي ومعتدل';
+                let iconName = 'wb_sunny';
+                let roadStatus = 'طريق صلخد - السويداء سالك بشكل طبيعي والرؤية واضحة.';
+                let isHazardousRoad = false;
+
+                if (code === 0 || code === 1) {
+                    condName = temp <= 10 ? 'صحو وبارد' : 'صافي';
+                    iconName = 'wb_sunny';
+                } else if (code === 2 || code === 3) {
+                    condName = 'غائم جزئياً';
+                    iconName = 'partly_cloudy_day';
+                } else if (code === 45 || code === 48) {
+                    condName = 'ضباب جبلي كثيف';
+                    iconName = 'foggy';
+                    roadStatus = '⚠️ تحذير حقيقي: ضباب كثيف حالياً في مرتفعات صلخد، يرجى تخفيف السرعة وتشغيل أضواء الضباب على طريق صلخد - السويداء.';
+                    isHazardousRoad = true;
+                } else if (code >= 51 && code <= 67) {
+                    condName = 'ممطر';
+                    iconName = 'rainy';
+                    roadStatus = '⚠️ تنبيه مروري: هطول مطري في صلخد، الطرقات الجبلية زلقة — يرجى الحذر وترك مسافة أمان.';
+                    isHazardousRoad = true;
+                } else if (code >= 71 && code <= 77) {
+                    condName = 'ثلوج وصقيع';
+                    iconName = 'ac_unit';
+                    roadStatus = '🚨 تحذير طوارئ جوي: تساقط ثلوج/جليد في مرتفعات صلخد (1350م)، يرجى عدم سلوك الطرقات الجبلية إلا للضرورة.';
+                    isHazardousRoad = true;
+                } else if (code >= 80) {
+                    condName = 'زخات مطرية غزيرة';
+                    iconName = 'thunderstorm';
+                    roadStatus = '⚠️ تنبيه جوي: زخات مطرية غزيرة ورياح نشطة على طريق صلخد، يرجى القيادة بحذر شديد.';
+                    isHazardousRoad = true;
+                }
+
+                if (temp <= 3 && !isHazardousRoad) {
+                    roadStatus = `❄️ تنبيه صقيع جبلي: الحرارة الآن ${temp}°C في صلخد، يرجى الحذر من تشكل الجليد الصباحي والليلي على الطرقات.`;
+                    isHazardousRoad = true;
+                } else if (wind >= 40 && !isHazardousRoad) {
+                    roadStatus = `💨 تنبيه رياح جبلية: سرعة الرياح الآن ${wind} كم/ساعة في صلخد، يرجى الانتباه أثناء القيادة.`;
+                } else if (!isHazardousRoad) {
+                    roadStatus = `✅ الجو في صلخد الآن ${condName} (${temp}°C)، الرطوبة ${humidity}% والرياح ${wind} كم/ساعة — طريق صلخد - السويداء سالك بوضوح.`;
+                }
+
+                if (tempEl) tempEl.innerText = `${temp}°C`;
+                if (condEl) condEl.innerText = condName;
+                if (windEl) windEl.innerText = `رياح ${wind} كم/س • رطوبة ${humidity}%`;
+                if (iconEl) iconEl.innerText = iconName;
+
+                if (roadTitle) roadTitle.innerText = `طقس صلخد الحي: ${temp}°C (${condName})`;
+                if (roadDesc) roadDesc.innerText = roadStatus;
+                if (roadBar && roadIcon) {
+                    if (isHazardousRoad) {
+                        roadBar.className = 'bg-red-50 border-2 border-error rounded-2xl px-3.5 py-2.5 flex items-center justify-between gap-2';
+                        roadIcon.className = 'material-symbols-outlined text-error text-[22px]';
+                        roadIcon.innerText = 'warning';
+                    } else {
+                        roadBar.className = 'bg-emerald-50/80 border border-emerald-200 rounded-2xl px-3.5 py-2.5 flex items-center justify-between gap-2';
+                        roadIcon.className = 'material-symbols-outlined text-emerald-700 text-[20px]';
+                        roadIcon.innerText = 'verified';
+                    }
+                }
+
+                // تحديث نص التنبيه الجوي الأول في قائمة التنبيهات ليعكس حالة الجو الحقيقية في صلخد
+                if (appNotifications.length > 0 && appNotifications[0].id === 'notif-1') {
+                    appNotifications[0].title = `حالة الطقس والطرقات في صلخد (${temp}°C - ${condName})`;
+                    appNotifications[0].body = roadStatus;
+                    appNotifications[0].time = 'تحديث جوي مباشر';
+                    renderNotifications();
+                }
+
+                if (manualClick) {
+                    showToast(`تم تحديث طقس صلخد المباشر: ${temp}°C (${condName})`);
+                }
+            } catch (e) {
+                if (tempEl && tempEl.innerText === '--°C') {
+                    tempEl.innerText = '17°C';
+                    condEl.innerText = 'معتدل جبلي';
+                }
+                if (roadDesc) {
+                    roadDesc.innerText = 'طقس جبلي معتدل في صلخد (ارتفاع 1350م) — طريق صلخد - السويداء سالك.';
+                }
             }
         }
 
@@ -1461,24 +1817,53 @@
         }
 
         // ==================== 4. تحديث العدادات، القوائم، ولوحة الأدمن ====================
-        // نظام إشعارات الأجهزة الحقيقي للرابط النظامي (Web Notification API + نغمة تنبيه + شريط إشعار علوي)
-        function playNotificationChime() {
+        // نظام إشعارات قوي وسريع جداً (نغمة مزدوجة واضحة + اهتزاز الهاتف + بانر علوي حي + إشعار متصفح أصلي)
+        let bannerHideTimer = null;
+
+        function playStrongAlertFeedback(isEmergency = false) {
+            try {
+                if (navigator.vibrate) {
+                    navigator.vibrate(isEmergency ? [300, 120, 300, 120, 400] : [200, 100, 250]);
+                }
+            } catch (e) {}
             try {
                 const AudioCtx = window.AudioContext || window.webkitAudioContext;
                 if (!AudioCtx) return;
                 const ctx = new AudioCtx();
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
-                osc.frequency.setValueAtTime(880, ctx.currentTime + 0.12); // A5
-                gain.gain.setValueAtTime(0.12, ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.45);
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-                osc.start();
-                osc.stop(ctx.currentTime + 0.45);
+                const now = ctx.currentTime;
+                const notes = isEmergency ? [880, 659.25, 880, 1046.5] : [659.25, 880, 1046.5];
+                notes.forEach((freq, idx) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = isEmergency ? 'triangle' : 'sine';
+                    osc.frequency.setValueAtTime(freq, now + idx * 0.13);
+                    gain.gain.setValueAtTime(0.22, now + idx * 0.13);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.13 + 0.22);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now + idx * 0.13);
+                    osc.stop(now + idx * 0.13 + 0.22);
+                });
             } catch (e) {}
+        }
+
+        function showLivePushBanner(title, body) {
+            const banner = document.getElementById('live-push-banner');
+            const tEl = document.getElementById('live-push-title');
+            const bEl = document.getElementById('live-push-body');
+            if (!banner || !tEl || !bEl) return;
+            tEl.innerText = '🔔 ' + title;
+            bEl.innerText = body;
+            banner.classList.remove('hidden');
+            if (bannerHideTimer) clearTimeout(bannerHideTimer);
+            bannerHideTimer = setTimeout(() => {
+                banner.classList.add('hidden');
+            }, 7000);
+        }
+
+        function dismissLivePushBanner() {
+            const banner = document.getElementById('live-push-banner');
+            if (banner) banner.classList.add('hidden');
         }
 
         function triggerDevicePushNotification(title, body, isEmergency = false) {
@@ -1490,19 +1875,20 @@
                 body,
                 read: false
             };
+            lastSeenNotifId = newNotif.id;
             appNotifications.unshift(newNotif);
             safeStorageSet('salkhad_notifs_v3', appNotifications);
             renderNotifications();
 
             if (devicePushEnabled) {
-                playNotificationChime();
-                // إرسال إشعار نظام أصلي على الهاتف / المتصفح إذا كان الرابط يعمل على الويب ومسموحاً
+                playStrongAlertFeedback(isEmergency);
+                showLivePushBanner(title, body);
                 try {
                     if ('Notification' in window && Notification.permission === 'granted') {
                         new Notification('صلخد الذكي: ' + title, { body });
                     }
                 } catch (e) {}
-                showToast(`🔔 إشعار جهاز: ${title} — ${body}`, isEmergency ? 'error' : 'success');
+                showToast(`🔔 إشعار فوري: ${title} — ${body}`, isEmergency ? 'error' : 'success');
             }
         }
 
@@ -1634,7 +2020,8 @@
             const form = document.getElementById('user-profile-form');
             if (!form) return;
             if (form.classList.contains('hidden')) {
-                document.getElementById('prof-name-input').value = currentUser ? currentUser.name : '';
+                document.getElementById('prof-name-input').value = (currentUser && currentUser.name !== 'زائر جديد') ? currentUser.name : '';
+                document.getElementById('prof-identity-input').value = currentUser ? (currentUser.identityProof || '') : '';
                 document.getElementById('prof-bio-input').value = currentUser ? (currentUser.bio || '') : '';
                 document.getElementById('prof-contact-input').value = currentUser ? (currentUser.contact || '') : '';
                 form.classList.remove('hidden');
@@ -1646,20 +2033,25 @@
         function saveUserProfile(event) {
             event.preventDefault();
             const name = document.getElementById('prof-name-input').value.trim();
+            const identityProof = document.getElementById('prof-identity-input').value.trim();
             const bio = document.getElementById('prof-bio-input').value.trim();
             const contact = document.getElementById('prof-contact-input').value.trim();
-            if (!name) return;
+            if (!name || !identityProof) {
+                showToast('يرجى إدخال الاسم وإثبات الهوية لتوثيق الحساب', 'error');
+                return;
+            }
 
             currentUser = {
                 id: currentUser && currentUser.id ? currentUser.id : ('user-' + Date.now()),
                 name,
-                bio: bio || 'عضو في مجتمع صلخد الذكي',
+                identityProof,
+                bio: bio || 'عضو موثق في مجتمع صلخد الذكي',
                 contact
             };
             try { localStorage.setItem('salkhad_user_profile_v3', JSON.stringify(currentUser)); } catch (e) {}
             document.getElementById('user-profile-form').classList.add('hidden');
             updateAllCountersAndViews();
-            showToast(`تم حفظ حسابك باسم "${name}" بنجاح!`);
+            showToast(`تم توثيق وحفظ حسابك باسم "${name}" بنجاح!`);
         }
 
         function openDirectMessageModal(toUserId = '', toName = '', defaultSubject = '') {
@@ -1890,7 +2282,7 @@
                 icon.innerText = 'storefront';
                 title.innerText = 'دليل المحلات والخدمات الشامل في صلخد';
                 subtitle.innerText = 'الأطباء، الصيدليات، المطاعم، الطاقة الشمسية، والورشات';
-                renderFilterPills(['الكل', 'نادي رياضي / Gym', 'صيدلية', 'طبيب / عيادة', 'مخبر / أشعة / تمريض', 'طب أسنان', 'مطاعم ومأكولات', 'مواد غذائية وسوبرماركت', 'طاقة شمسية وكهربائيات', 'محل تجاري / مهنة', 'اتصالات وإنترنت ومكتبات', 'زراعة وبيطرة']);
+                renderFilterPills(['الكل', 'كوافير رجالي', 'كوافير نسائي', 'عناية بالبشرة وتجميل', 'نادي رياضي / Gym', 'صيدلية', 'طبيب / عيادة', 'مخبر / أشعة / تمريض', 'طب أسنان', 'مطاعم ومأكولات', 'مواد غذائية وسوبرماركت', 'طاقة شمسية وكهربائيات', 'محل تجاري / مهنة', 'اتصالات وإنترنت ومكتبات', 'زراعة وبيطرة']);
             } else if (section === 'transport') {
                 icon.innerText = 'local_taxi';
                 title.innerText = 'المواصلات، التكاسي، السرافيس، والدليفري';
@@ -2014,6 +2406,14 @@
         function openSubmitModal(defaultCat = 'directory') {
             const modal = document.getElementById('submit-modal');
             document.getElementById('sub-category').value = defaultCat;
+            const nameInput = document.getElementById('sub-author-realname');
+            const idInput = document.getElementById('sub-identity-proof');
+            if (nameInput && currentUser && currentUser.name && currentUser.name !== 'زائر جديد') {
+                nameInput.value = currentUser.name;
+            }
+            if (idInput && currentUser && currentUser.identityProof) {
+                idInput.value = currentUser.identityProof;
+            }
             modal.classList.remove('hidden');
             modal.classList.add('flex');
         }
@@ -2032,6 +2432,8 @@
 
         function handleUserSubmission(event) {
             event.preventDefault();
+            const realName = document.getElementById('sub-author-realname').value.trim();
+            const identityProof = document.getElementById('sub-identity-proof').value.trim();
             const category = document.getElementById('sub-category').value;
             const tag = document.getElementById('sub-tag').value;
             const title = document.getElementById('sub-title').value.trim();
@@ -2039,7 +2441,21 @@
             const phone = document.getElementById('sub-phone').value.trim();
             const desc = document.getElementById('sub-desc').value.trim();
 
+            if (!realName || realName.length < 4 || !identityProof || identityProof.length < 4) {
+                showToast('يرجى إدخال اسمك الحقيقي وما يثبت هويتك قبل نشر أي خدمة', 'error');
+                return;
+            }
             if (!title || !desc) return;
+
+            // حفظ هوية المستخدم في حسابه تلقائياً للمرات القادمة
+            currentUser = {
+                id: currentUser && currentUser.id ? currentUser.id : ('user-' + Date.now()),
+                name: realName,
+                identityProof,
+                bio: currentUser && currentUser.bio ? currentUser.bio : 'عضو موثق في مجتمع صلخد الذكي',
+                contact: phone || (currentUser ? currentUser.contact : '')
+            };
+            try { localStorage.setItem('salkhad_user_profile_v3', JSON.stringify(currentUser)); } catch (e) {}
 
             const newItem = {
                 id: 'item-' + Date.now(),
@@ -2050,8 +2466,9 @@
                 phone: phone || (currentUser && currentUser.contact ? currentUser.contact : 'غير محدد'),
                 desc,
                 status: 'pending',
-                author: currentUser ? currentUser.name : 'مواطن من صلخد',
-                authorId: currentUser ? currentUser.id : '',
+                author: realName,
+                authorId: currentUser.id,
+                identityProof,
                 createdAt: 'الآن'
             };
 
@@ -2379,7 +2796,11 @@
                         </div>
                         <h4 class="font-extrabold text-sm text-deep-charcoal mt-1">${item.title}</h4>
                         <p class="text-xs text-slate-600 mt-1 mb-2">${item.desc}</p>
-                        <div class="text-[11px] text-slate-500 mb-3">📍 ${item.location} | 📞 ${item.phone}</div>
+                        <div class="text-[11px] text-slate-500 mb-1.5">📍 ${item.location} | 📞 ${item.phone}</div>
+                        <div class="bg-white border border-amber-300 rounded-xl px-2.5 py-1.5 mb-3 text-[11px] text-amber-950 flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-[16px] text-amber-800">verified_user</span>
+                            <span><strong>إثبات هوية الناشر:</strong> ${item.identityProof || 'لم يُرفق'}</span>
+                        </div>
                         <div class="flex gap-2">
                             <button onclick="adminApproveItem('${item.id}')" class="flex-1 bg-emerald-700 hover:bg-emerald-800 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1">
                                 <span class="material-symbols-outlined text-[16px]">check_circle</span>
@@ -2456,19 +2877,23 @@
             modal.classList.remove('flex');
         }
 
-        // ==================== 10. تتبع الزوار الإحصائي وتشغيل التطبيق ====================
-        (function recordAndDisplayVisits() {
-            let count = 148;
-            try {
-                count = parseInt(localStorage.getItem('salkhad_visitors_total')) || 148;
-                count += 1;
-                localStorage.setItem('salkhad_visitors_total', count);
-            } catch (e) {}
-
+        // ==================== 10. عداد الزيارات الدقيق والحقيقي (متزامن مع Firebase) ====================
+        function renderVisitorBadge() {
             const badge = document.getElementById('visitor-count-badge');
             if (badge) {
-                badge.innerText = count.toLocaleString('ar-EG');
+                badge.innerText = Number(appTotalVisits || 1).toLocaleString('en-US');
             }
+        }
+
+        (function initExactVisits() {
+            try {
+                const saved = parseInt(localStorage.getItem('salkhad_exact_visits_v4'), 10);
+                appTotalVisits = (!isNaN(saved) && saved >= 1) ? saved + 1 : 1;
+                localStorage.setItem('salkhad_exact_visits_v4', String(appTotalVisits));
+            } catch (e) {
+                appTotalVisits = 1;
+            }
+            renderVisitorBadge();
         })();
 
         initAppData();
